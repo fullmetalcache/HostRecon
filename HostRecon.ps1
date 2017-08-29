@@ -321,78 +321,78 @@ function Invoke-HostRecon{
     Foreach ($ps in $processnames)
             {
             #AV
-            if ($ps.ProcessName -like "*mcshield*")
+            if ($ps -like "*mcshield*")
                 {
-                Write-Output ("Possible McAfee AV process " + $ps.ProcessName + " is running.")
+                Write-Output ("Possible McAfee AV process " + $ps + " is running.")
                 }
-            if (($ps.ProcessName -like "*windefend*") -or ($ps.ProcessName -like "*MSASCui*") -or ($ps.ProcessName -like "*msmpeng*") -or ($ps.ProcessName -like "*msmpsvc*"))
+            if (($ps -like "*windefend*") -or ($ps -like "*MSASCui*") -or ($ps -like "*msmpeng*") -or ($ps -like "*msmpsvc*"))
                 {
-                Write-Output ("Possible Windows Defender AV process " + $ps.ProcessName + " is running.")
+                Write-Output ("Possible Windows Defender AV process " + $ps + " is running.")
                 }
-            if ($ps.ProcessName -like "*WRSA*")
+            if ($ps -like "*WRSA*")
                 {
-                Write-Output ("Possible WebRoot AV process " + $ps.ProcessName + " is running.")
+                Write-Output ("Possible WebRoot AV process " + $ps + " is running.")
                 }
-            if ($ps.ProcessName -like "*savservice*")
+            if ($ps -like "*savservice*")
                 {
-                Write-Output ("Possible Sophos AV process " + $ps.ProcessName + " is running.")
+                Write-Output ("Possible Sophos AV process " + $ps + " is running.")
                 }
-            if (($ps.ProcessName -like "*TMCCSF*") -or ($ps.ProcessName -like "*TmListen*") -or ($ps.ProcessName -like "*NTRtScan*"))
+            if (($ps -like "*TMCCSF*") -or ($ps-like "*TmListen*") -or ($ps -like "*NTRtScan*"))
                 {
-                Write-Output ("Possible Trend Micro AV process " + $ps.ProcessName + " is running.")
+                Write-Output ("Possible Trend Micro AV process " + $ps + " is running.")
                 }
-            if (($ps.ProcessName -like "*symantec antivirus*") -or ($ps.ProcessName -like "*SymCorpUI*") -or ($ps.ProcessName -like "*ccSvcHst*") -or ($ps.ProcessName -like "*SMC*")  -or ($ps.ProcessName -like "*Rtvscan*"))
+            if (($ps -like "*symantec antivirus*") -or ($ps -like "*SymCorpUI*") -or ($ps -like "*ccSvcHst*") -or ($ps -like "*SMC*")  -or ($ps -like "*Rtvscan*"))
                 {
-                Write-Output ("Possible Symantec AV process " + $ps.ProcessName + " is running.")
+                Write-Output ("Possible Symantec AV process " + $ps + " is running.")
                 }
-            if ($ps.ProcessName -like "*mbae*")
+            if ($ps -like "*mbae*")
                 {
-                Write-Output ("Possible MalwareBytes Anti-Exploit process " + $ps.ProcessName + " is running.")
+                Write-Output ("Possible MalwareBytes Anti-Exploit process " + $ps + " is running.")
                 }
-            if ($ps.ProcessName -like "*mbam*")
+            if ($ps -like "*mbam*")
                 {
-                Write-Output ("Possible MalwareBytes Anti-Malware process " + $ps.ProcessName + " is running.")
+                Write-Output ("Possible MalwareBytes Anti-Malware process " + $ps + " is running.")
                 }
             #AppWhitelisting
-            if ($ps.ProcessName -like "*Parity*")
+            if ($ps -like "*Parity*")
                 {
-                Write-Output ("Possible Bit9 application whitelisting process " + $ps.ProcessName + " is running.")
+                Write-Output ("Possible Bit9 application whitelisting process " + $ps + " is running.")
                 }
             #Behavioral Analysis
-            if ($ps.ProcessName -like "*cb*")
+            if ($ps -like "*cb*")
                 {
-                Write-Output ("Possible Carbon Black behavioral analysis process " + $ps.ProcessName + " is running.")
+                Write-Output ("Possible Carbon Black behavioral analysis process " + $ps + " is running.")
                 }
-            if ($ps.ProcessName -like "*bds-vision*")
+            if ($ps -like "*bds-vision*")
                 {
-                Write-Output ("Possible BDS Vision behavioral analysis process " + $ps.ProcessName + " is running.")
+                Write-Output ("Possible BDS Vision behavioral analysis process " + $ps + " is running.")
                 } 
-            if ($ps.ProcessName -like "*Triumfant*")
+            if ($ps -like "*Triumfant*")
                 {
-                Write-Output ("Possible Triumfant behavioral analysis process " + $ps.ProcessName + " is running.")
+                Write-Output ("Possible Triumfant behavioral analysis process " + $ps + " is running.")
                 }
-            if ($ps.ProcessName -like "CSFalcon")
+            if ($ps -like "CSFalcon")
                 {
-                Write-Output ("Possible CrowdStrike Falcon EDR process " + $ps.ProcessName + " is running.")
+                Write-Output ("Possible CrowdStrike Falcon EDR process " + $ps+ " is running.")
                 }
             #Intrusion Detection
-            if ($ps.ProcessName -like "*ossec*")
+            if ($ps -like "*ossec*")
                 {
-                Write-Output ("Possible OSSEC intrusion detection process " + $ps.ProcessName + " is running.")
+                Write-Output ("Possible OSSEC intrusion detection process " + $ps + " is running.")
                 } 
             #Firewall
-            if ($ps.ProcessName -like "*TmPfw*")
+            if ($ps -like "*TmPfw*")
                 {
-                Write-Output ("Possible Trend Micro firewall process " + $ps.ProcessName + " is running.")
+                Write-Output ("Possible Trend Micro firewall process " + $ps + " is running.")
                 } 
             #DLP
-            if (($ps.ProcessName -like "dgagent") -or ($ps.ProcessName -like "DgService") -or ($ps.ProcessName -like "DgScan"))
+            if (($ps -like "dgagent") -or ($ps -like "DgService") -or ($ps -like "DgScan"))
                 {
-                Write-Output ("Possible Verdasys Digital Guardian DLP process " + $ps.ProcessName + " is running.")
+                Write-Output ("Possible Verdasys Digital Guardian DLP process " + $ps + " is running.")
                 }   
-            if ($ps.ProcessName -like "kvoop")
+            if ($ps -like "kvoop")
                 {
-                Write-Output ("Possible Unknown DLP process " + $ps.ProcessName + " is running.")
+                Write-Output ("Possible Unknown DLP process " + $ps + " is running.")
                 }                       
             }
 	    
@@ -405,7 +405,6 @@ function Invoke-HostRecon{
         $processnames = $processes | Select-Object ProcessName
         Foreach ($ps in $processnames)
         {
-		Write-Output ($ps)
 		#TrackIt
 		if (($ps -like "*TIRemote*") -or ($ps -like "*TIService*"))
 		{

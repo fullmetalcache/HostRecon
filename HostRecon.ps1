@@ -241,7 +241,7 @@ function Invoke-HostRecon{
     $processout = $processes | Format-Table -Wrap | Out-String
     $processout
     Write-Output "`n"
-
+    
     #Checking for common security products
 
     Write-Output "[*] Checking for Sysinternals Sysmon"
@@ -338,6 +338,23 @@ function Invoke-HostRecon{
                 Write-Output ("Possible Unknown DLP process " + $ps.ProcessName + " is running.")
                 }                       
             }
+	    
+    Write-Output "`n"
+    
+    Write-Output "[*] Checking for processes with known vulnerabilities"
+    
+    $processnames = $processes | Select-Object ProcessName
+    Foreach ($ps in $processnames)
+            {
+            #TrackIt
+	    if (($ps.ProcessName -like "TIRemote") -or ($ps.ProcessName -like "TIService"))
+	    	{
+		Write-Output ("Possible TrackIt process " + $ps.ProcessName + "is running.")
+		Write-Output ("References: https://www.gracefulsecurity.com/bmcnumara-track-it-decrypt-pass-tool/")
+		Write-Output ("Suggestion: Attempt to find trackit.cfg either localler or on a network share")
+            	}
+	    }
+	    
     Write-Output "`n"
 
     #Domain Password Policy

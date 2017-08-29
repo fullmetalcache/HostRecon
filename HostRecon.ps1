@@ -93,37 +93,49 @@ function Invoke-HostRecon{
 
     #Netstat Information
     #Some code here borrowed from: http://techibee.com/powershell/query-list-of-listening-ports-in-windows-using-powershell/2344
-        Write-Output "[*] Active Network Connections"
-        $TCPProperties = [System.Net.NetworkInformation.IPGlobalProperties]::GetIPGlobalProperties()            
-        $Connections = $TCPProperties.GetActiveTcpConnections()            
-        $objarray = @()
-        foreach($Connection in $Connections) {            
-            if($Connection.LocalEndPoint.AddressFamily -eq "InterNetwork" ) { $IPType = "IPv4" } else { $IPType = "IPv6" }            
-            $OutputObj = New-Object -TypeName PSobject            
-            $OutputObj | Add-Member -MemberType NoteProperty -Name "LocalAddress" -Value $Connection.LocalEndPoint.Address            
-            $OutputObj | Add-Member -MemberType NoteProperty -Name "LocalPort" -Value $Connection.LocalEndPoint.Port            
-            $OutputObj | Add-Member -MemberType NoteProperty -Name "RemoteAddress" -Value $Connection.RemoteEndPoint.Address            
-            $OutputObj | Add-Member -MemberType NoteProperty -Name "RemotePort" -Value $Connection.RemoteEndPoint.Port            
-            $OutputObj | Add-Member -MemberType NoteProperty -Name "State" -Value $Connection.State            
-            $OutputObj | Add-Member -MemberType NoteProperty -Name "IPV4Or6" -Value $IPType            
-            $objarray += $OutputObj
-            }
-            $activeconnections = $objarray | Format-Table -Wrap | Out-String
-            $activeconnections
+    Write-Output "[*] Active Network Connections"
+    try 
+    {
 
-       Write-Output "[*] Active TCP Listeners"            
-        $ListenConnections = $TCPProperties.GetActiveTcpListeners()            
-        $objarraylisten = @()
-            foreach($Connection in $ListenConnections) {            
-            if($Connection.address.AddressFamily -eq "InterNetwork" ) { $IPType = "IPv4" } else { $IPType = "IPv6" }                 
-            $OutputObjListen = New-Object -TypeName PSobject            
-            $OutputObjListen | Add-Member -MemberType NoteProperty -Name "LocalAddress" -Value $connection.Address            
-            $OutputObjListen | Add-Member -MemberType NoteProperty -Name "ListeningPort" -Value $Connection.Port            
-            $OutputObjListen | Add-Member -MemberType NoteProperty -Name "IPV4Or6" -Value $IPType            
-            $objarraylisten += $OutputObjListen }
-            $listeners = $objarraylisten | Format-Table -Wrap | Out-String
-            $listeners
-        
+	    $TCPProperties = [System.Net.NetworkInformation.IPGlobalProperties]::GetIPGlobalProperties()            
+	    $Connections = $TCPProperties.GetActiveTcpConnections()            
+	    $objarray = @()
+	    foreach($Connection in $Connections) {            
+	        if($Connection.LocalEndPoint.AddressFamily -eq "InterNetwork" ) { $IPType = "IPv4" } else { $IPType = "IPv6" }            
+	        $OutputObj = New-Object -TypeName PSobject            
+	        $OutputObj | Add-Member -MemberType NoteProperty -Name "LocalAddress" -Value $Connection.LocalEndPoint.Address            
+	        $OutputObj | Add-Member -MemberType NoteProperty -Name "LocalPort" -Value $Connection.LocalEndPoint.Port            
+	        $OutputObj | Add-Member -MemberType NoteProperty -Name "RemoteAddress" -Value $Connection.RemoteEndPoint.Address            
+	        $OutputObj | Add-Member -MemberType NoteProperty -Name "RemotePort" -Value $Connection.RemoteEndPoint.Port            
+	        $OutputObj | Add-Member -MemberType NoteProperty -Name "State" -Value $Connection.State            
+	        $OutputObj | Add-Member -MemberType NoteProperty -Name "IPV4Or6" -Value $IPType            
+	        $objarray += $OutputObj
+        }
+	    
+	    $activeconnections = $objarray | Format-Table -Wrap | Out-String
+	    $activeconnections
+	    
+	    Write-Output "[*] Active TCP Listeners"            
+	    $ListenConnections = $TCPProperties.GetActiveTcpListeners()
+	    $objarraylisten = @()
+	    foreach($Connection in $ListenConnections) {            
+		    if($Connection.address.AddressFamily -eq "InterNetwork" ) { $IPType = "IPv4" } else { $IPType = "IPv6" }                 
+			    $OutputObjListen = New-Object -TypeName PSobject            
+			    $OutputObjListen | Add-Member -MemberType NoteProperty -Name "LocalAddress" -Value $connection.Address            
+			    $OutputObjListen | Add-Member -MemberType NoteProperty -Name "ListeningPort" -Value $Connection.Port            
+			    $OutputObjListen | Add-Member -MemberType NoteProperty -Name "IPV4Or6" -Value $IPType            
+			    $objarraylisten += $OutputObjListen
+		}
+
+        $listeners = $objarraylisten | Format-Table -Wrap | Out-String
+        $listeners
+
+	}
+	catch 
+    {
+        Write-Output "There was an error retrieving the TCP Connection Information"
+    }
+
     Write-Output "`n"
 
     #DNS Cache Information
@@ -141,79 +153,117 @@ function Invoke-HostRecon{
     Write-Output "`n"
 
     #Shares
-
     Write-Output "[*] Share listing"
-    $shares = @()
-    $shares = Get-WmiObject -Class Win32_Share | Format-Table -Wrap | Out-String
-    $shares
+
+    try 
+    {
+        $shares = @()
+        $shares = Get-WmiObject -Class Win32_Share | Format-Table -Wrap | Out-String
+        $shares
+    }
+    catch 
+    {
+        Write-Output "[*] There was an error retrieving the Share Listing"
+    }
+
     Write-Output "`n"
 
     #Scheduled Tasks
 
     Write-Output "[*] List of scheduled tasks"
-    $schedule = new-object -com("Schedule.Service")
-    $schedule.connect() 
-    $tasks = $schedule.getfolder("\").gettasks(0) | Select-Object Name | Format-Table -Wrap | Out-String
-    If ($tasks.count -eq 0)
-        {
-        Write-Output "[*] Task scheduler appears to be empty"
-        }
-    If ($tasks.count -ne 0)
-        {
-        $tasks
-        }
+    try 
+    {
+        $schedule = new-object -com("Schedule.Service")
+        $schedule.connect() 
+        $tasks = $schedule.getfolder("\").gettasks(0) | Select-Object Name | Format-Table -Wrap | Out-String
+        If ($tasks.count -eq 0)
+            {
+            Write-Output "[*] Task scheduler appears to be empty"
+            }
+        If ($tasks.count -ne 0)
+            {
+            $tasks
+            }
+    }
+    catch 
+    {
+        Write-Output "[*] There was an error retrieving the Scheduled Tasks Listing"
+    }
     Write-Output "`n"
 
     #Proxy information
 
     Write-Output "[*] Proxy Info"
-    $proxyenabled = (Get-ItemProperty -Path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Internet Settings').proxyEnable
-    $proxyserver = (Get-ItemProperty -Path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Internet Settings').proxyServer
 
-    If ($proxyenabled -eq 1)
-        {
-            Write-Output "A system proxy appears to be enabled."
-            Write-Output "System proxy located at: $proxyserver"
-        }
-    Elseif($proxyenabled -eq 0)
-        {
-            Write-Output "There does not appear to be a system proxy enabled."
-        }
+    try 
+    {
+        $proxyenabled = (Get-ItemProperty -Path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Internet Settings').proxyEnable
+        $proxyserver = (Get-ItemProperty -Path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Internet Settings').proxyServer
+
+        If ($proxyenabled -eq 1)
+            {
+                Write-Output "A system proxy appears to be enabled."
+                Write-Output "System proxy located at: $proxyserver"
+            }
+        Elseif($proxyenabled -eq 0)
+            {
+                Write-Output "There does not appear to be a system proxy enabled."
+            }
+
+    }
+    catch 
+    {
+        Write-Output "[*] There was an error retrieving the Proxy Info"
+    }
     Write-Output "`n"
 
     #Getting AntiVirus Information
 
-
     Write-Output "[*] Checking if AV is installed"
 
-    $AV = Get-WmiObject -Namespace "root\SecurityCenter2" -Query "SELECT * FROM AntiVirusProduct" 
+    try 
+    {
+        $AV = Get-WmiObject -Namespace "root\SecurityCenter2" -Query "SELECT * FROM AntiVirusProduct" 
 
-    If ($AV -ne "")
-        {
-            Write-Output "The following AntiVirus product appears to be installed:" $AV.displayName
-        }
-    If ($AV -eq "")
-        {
-            Write-Output "No AV detected."
-        }
+        If ($AV -ne "")
+            {
+                Write-Output "The following AntiVirus product appears to be installed:" $AV.displayName
+            }
+        If ($AV -eq "")
+            {
+                Write-Output "No AV detected."
+            }
+    }
+    catch 
+    {
+        Write-Output "[*] There was an error retrieving the AV Info"
+    }
     Write-Output "`n"
 
     #Getting Local Firewall Status
 
     Write-Output "[*] Checking local firewall status."
-    $HKLM = 2147483650
-    $reg = get-wmiobject -list -namespace root\default -computer $computer | where-object { $_.name -eq "StdRegProv" }
-    $firewallEnabled = $reg.GetDwordValue($HKLM, "System\ControlSet001\Services\SharedAccess\Parameters\FirewallPolicy\StandardProfile","EnableFirewall")
-    $fwenabled = [bool]($firewallEnabled.uValue)
+    try 
+    {
+        $HKLM = 2147483650
+        $reg = get-wmiobject -list -namespace root\default -computer $computer | where-object { $_.name -eq "StdRegProv" }
+        $firewallEnabled = $reg.GetDwordValue($HKLM, "System\ControlSet001\Services\SharedAccess\Parameters\FirewallPolicy\StandardProfile","EnableFirewall")
+        $fwenabled = [bool]($firewallEnabled.uValue)
 
-    If($fwenabled -eq $true)
-        {
-            Write-Output "The local firewall appears to be enabled."
-        }
-    If($fwenabled -ne $true)
-        {
-            Write-Output "The local firewall appears to be disabled."
-        }
+        If($fwenabled -eq $true)
+            {
+                Write-Output "The local firewall appears to be enabled."
+            }
+        If($fwenabled -ne $true)
+            {
+                Write-Output "The local firewall appears to be disabled."
+            }
+    }
+    catch 
+    {
+        Write-Output "[*] There was an error retrieving the local firewall status"
+    }
+                
     Write-Output "`n"
 
     #Checking for Local Admin Password Solution (LAPS)
@@ -343,17 +393,24 @@ function Invoke-HostRecon{
     
     Write-Output "[*] Checking for processes with known vulnerabilities"
     
-    $processnames = $processes | Select-Object ProcessName
-    Foreach ($ps in $processnames)
+    try 
+    {
+        $processnames = $processes | Select-Object ProcessName
+        Foreach ($ps in $processnames) 
+        {
+                #TrackIt
+	        if (($ps.ProcessName -like "TIRemote") -or ($ps.ProcessName -like "TIService"))
             {
-            #TrackIt
-	    if (($ps.ProcessName -like "TIRemote") -or ($ps.ProcessName -like "TIService"))
-	    	{
-		Write-Output ("Possible TrackIt process " + $ps.ProcessName + "is running.")
-		Write-Output ("References: https://www.gracefulsecurity.com/bmcnumara-track-it-decrypt-pass-tool/")
-		Write-Output ("Suggestion: Attempt to find trackit.cfg either localler or on a network share")
-            	}
+		        Write-Output ("Possible TrackIt process " + $ps.ProcessName + "is running.")
+		        Write-Output ("References: https://www.gracefulsecurity.com/bmcnumara-track-it-decrypt-pass-tool/")
+		        Write-Output ("Suggestion: Attempt to find trackit.cfg either localler or on a network share")
+            }
 	    }
+    }
+    catch 
+    {
+        Write-Output "[*] There was an error checking for vulnerable processes"
+    }
 	    
     Write-Output "`n"
 

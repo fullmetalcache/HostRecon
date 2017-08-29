@@ -406,7 +406,7 @@ function Invoke-HostRecon{
         Foreach ($ps in $processnames) 
         {
                 #TrackIt
-	        if (($ps.ProcessName -like "TIRemote") -or ($ps.ProcessName -like "TIService"))
+	        if (($ps.ProcessName -like "*TIRemote*") -or ($ps.ProcessName -like "*TIService*"))
             {
 		        Write-Output ("Possible TrackIt process " + $ps.ProcessName + "is running.")
 		        Write-Output ("References: https://www.gracefulsecurity.com/bmcnumara-track-it-decrypt-pass-tool/")

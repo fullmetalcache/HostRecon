@@ -403,16 +403,17 @@ function Invoke-HostRecon{
     try 
     {
         $processnames = $processes | Select-Object ProcessName
-        Foreach ($ps in $processnames) 
+        Foreach ($ps in $processnames)
         {
-                #TrackIt
-	        if (($ps.ProcessName -like "*TIRemote*") -or ($ps.ProcessName -like "*TIService*"))
-            {
-		        Write-Output ("Possible TrackIt process " + $ps.ProcessName + "is running.")
-		        Write-Output ("References: https://www.gracefulsecurity.com/bmcnumara-track-it-decrypt-pass-tool/")
-		        Write-Output ("Suggestion: Attempt to find trackit.cfg either localler or on a network share")
-            }
-	    }
+		Write-Output ($ps)
+		#TrackIt
+		if (($ps -like "*TIRemote*") -or ($ps -like "*TIService*"))
+		{
+			Write-Output ("Possible TrackIt process " + $ps + "is running.")
+			Write-Output ("References: https://www.gracefulsecurity.com/bmcnumara-track-it-decrypt-pass-tool/")
+			Write-Output ("Suggestion: Attempt to find trackit.cfg either localler or on a network share")
+		}
+	}
     }
     catch 
     {

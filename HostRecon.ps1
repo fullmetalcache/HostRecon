@@ -87,15 +87,15 @@ function Invoke-HostRecon{
     #Local Admins group
 
     Write-Output "[*] Local Admins of this system"
-    try
-    {
-    	$Admins = Get-WmiObject win32_groupuser | Where-Object { $_.GroupComponent -match 'administrators' -and ($_.GroupComponent -match "Domain=`"$env:COMPUTERNAME`"")} | ForEach-Object {[wmi]$_.PartComponent } | Select-Object Caption,SID | format-table -Wrap | Out-String
-    	Write-Output $Admins
-    }
-    catch
-    {
-    	Write-Output "There was an error retrieving the local admins"
-    }
+    #try
+    #{
+    #	$Admins = Get-WmiObject win32_groupuser | Where-Object { $_.GroupComponent -match 'administrators' -and ($_.GroupComponent -match "Domain=`"$env:COMPUTERNAME`"")} | ForEach-Object {[wmi]$_.PartComponent } | Select-Object Caption,SID | format-table -Wrap | Out-String
+    #	Write-Output $Admins
+    #}
+    #catch
+    #{
+    #	Write-Output "There was an error retrieving the local admins"
+    #}
     Write-Output "`n"
 
     #Netstat Information
